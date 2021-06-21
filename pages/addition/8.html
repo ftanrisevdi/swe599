@@ -1,0 +1,212 @@
+<link type="text/css" rel="stylesheet" href="./../../assets/index.css">
+<style>
+  .square-container {
+    width: 80px;
+    height: 80px;
+    position: relative;
+    transform: skew(145deg, 0deg);
+    margin-left: 70px;
+    border: 1px solid black
+  }
+
+  .square-container .bottom {
+    border-right: 1px solid grey;
+    border-bottom: 1px solid grey;
+    width: 26px;
+    height: 26px;
+    display: block;
+    float: left
+  }
+
+  .filler {
+    width: 20px;
+    height: 20px;
+    top: 0px;
+    display: inline-block;
+    background-color: blue;
+    box-shadow: rgb(0 0 0 / 24%) 0px 3px 8px;
+    transform: translate(-5px, -5px);
+    position: absolute;
+  }
+
+  .result-container {
+    display: flex;
+  }
+
+  input[type='text'] {
+    height: 20px;
+    padding: 3px;
+    width: 40px;
+  }
+
+  .right {
+    width: 400px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+
+  .result {
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+  }
+</style>
+<p>Şimdi de 3 sayılı duruma bakalım.</strong></p>
+
+<div style="display: flex;padding-top:20px ;">
+  <div class="left">
+    <div id="form">
+      <input onkeyup="fillActiveSquare('number1', this)" onkeydown="removeActiveSquare('number1')" type="text"> +
+      <input onkeyup="fillActiveSquare('number2', this)" onkeydown="removeActiveSquare('number2')" type="text"> +
+      <input onkeyup="fillActiveSquare('number3', this)" onkeydown="removeActiveSquare('number3')" type="text"> =
+      <input type="text" id="result"> <button type="button" onclick="calculate()">Test Et</button>
+      <button type="button" onclick="divide()">Onluklara Böl</button>
+      <p class="error-message"></p>
+    </div>
+  </div>
+  <div class="right">
+    <div id="number1" class="square-container">
+    </div>
+    <br />
+    <div id="number2" class="square-container">
+    </div>
+    <br />
+    <div id="number3" class="square-container">
+    </div>
+    <br />
+    <div style="width:250px ;">
+      <hr>
+    </div>
+    <br />
+    <div class="result-container">
+      <div id="resultVisualTen" class="square-container">
+      </div>
+      <div id="resultVisual" class="square-container">
+      </div>
+    </div>
+
+  </div>
+</div>
+<p>Makinemizin algoritmasını bu sefer 3 rakam için tekrar yazalım.</p>
+<ul>
+  <li>Alttaki, ortadaki ve üstteki sayı toplama alanına indirilir ve sayıalr birbirine eklenir.</li>
+  <li>Toplama alanındaki sayı eğer 10'dan büyükse, 10 çıkarılır ve sol alana 1 yazılır .</li>
+  <li>Geri kalan toplama alanında kalır.</li>
+
+</ul>
+
+<script>
+  const settings = {
+    0: {
+      left: 0,
+      top: 0,
+      transform: -5
+    },
+    1: {
+      left: 25,
+      top: 0,
+      transform: -5
+    },
+    2: {
+      left: 50,
+      top: 0,
+      transform: -5
+    },
+    3: {
+      left: 0,
+      top: 25,
+      transform: -5
+    },
+    4: {
+      left: 25,
+      top: 25,
+      transform: -5
+    },
+    5: {
+      left: 50,
+      top: 25,
+      transform: -5
+    }
+    ,
+    6: {
+      left: 0,
+      top: 50,
+      transform: -5
+    },
+    7: {
+      left: 25,
+      top: 50,
+      transform: -5
+    },
+    8: {
+      left: 50,
+      top: 50,
+      transform: -5
+    }
+  }
+  const fillSquare = (dom) => {
+    for (let i = 0; i < 9; i++) {
+      dom.insertAdjacentHTML('beforeend', `<span class="bottom"></span>`)
+    }
+  }
+  const removeActiveSquare = (elem) => {
+    const element = document.getElementById(elem).querySelectorAll('.filler')
+    Array.prototype.forEach.call(element, function (node) {
+      node.parentNode.removeChild(node);
+    });
+  }
+  const divide = () => {
+    const number = parseInt(document.getElementById('result').value);
+    removeActiveSquare('resultVisualTen')
+    removeActiveSquare('resultVisual')
+    fillActiveSquare('resultVisualTen', '', Math.floor(number / 10))
+    fillActiveSquare('resultVisual', '', number % 10)
+    const resultVisualTen = document.getElementById('resultVisualTen')
+    resultVisualTen.insertAdjacentHTML('beforeend', `<span class="result">${resultVisualTen.dataset.number}</span>`)
+    const resultVisual = document.getElementById('resultVisual')
+    resultVisual.insertAdjacentHTML('beforeend', `<span class="result">${resultVisual.dataset.number}</span>`)
+
+  }
+  const fillActiveSquare = (elem, itself, number) => {
+    const dom = document.getElementById(elem);
+    if (!number) {
+      number = parseInt(itself.value)
+    }
+    dom.setAttribute('data-number', number)
+    let counter = 0;
+    let layer = 1;
+    let randomColor = 'blue'
+    for (let i = 0; i < number; i++) {
+      dom.insertAdjacentHTML('beforeend', `<span class="filler" style="background-color:${randomColor};left:${settings[counter].left}px;top:${settings[counter].top}px;transform:translate(${settings[counter].transform * layer}px, ${settings[counter].transform * layer}px)"></span>`)
+
+      counter++
+      if (counter === 9) {
+        layer++;
+        counter = 0;
+        randomColor = "#" + Math.floor(Math.random() * 16777215).toString(16);
+      }
+    }
+
+  }
+  const calculate = () => {
+    const number1 = parseInt(document.getElementById('number1').dataset.number);
+    const number2 = parseInt(document.getElementById('number2').dataset.number);
+    const number3 = parseInt(document.getElementById('number3').dataset.number);
+    if (!number1 || typeof number1 != 'number' || !number2 || typeof number2 != 'number' || !number3 || typeof number3 != 'number') {
+      document.getElementById('form').classList.add('error')
+      document.querySelector('.error-message').innerHTML = "Ilk üç alanı doldurunuz!"
+      return
+    } else {
+      document.querySelector('.error-message').innerHTML = ""
+    }
+    removeActiveSquare('resultVisual');
+    removeActiveSquare('resultVisualTen');
+    result.value = number1 + number2 + number3;
+    fillActiveSquare('resultVisual', result);
+  }
+  const elements = document.querySelectorAll('.square-container');
+  for (let i = 0; i < elements.length; i++) {
+    fillSquare(elements[i]);
+  }
+</script>

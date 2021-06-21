@@ -1,0 +1,177 @@
+<link type="text/css" rel="stylesheet" href="./../../assets/index.css">
+<style>
+  #ruler {
+    position: relative;
+    width: 800px;
+    height: 102px;
+    margin-left: 50px;
+  }
+
+  .ruler {
+    height: 50px;
+    width: 475px;
+    border: 1px solid;
+    position: absolute;
+    left: -10px;
+  }
+
+  .ruler .ruler-container {
+    position: relative;
+    height: 48px;
+  }
+
+  .ruler-line {
+    display: inline-block;
+    height: 10px;
+    width: 1px;
+    background-color: black;
+    position: absolute;
+  }
+
+  .ruler-line.middle {
+    height: 15px;
+  }
+
+  .ruler-line.big {
+    height: 20px;
+  }
+
+  .ruler-number {
+    position: absolute;
+    top: 25px;
+    font-size: 10px;
+  }
+
+  #rulerTop .ruler-line {
+    bottom: 0px;
+  }
+
+  #rulerTop .ruler-number {
+    top: 10px;
+  }
+
+  #rulerBottom.ruler {
+    top: 52px;
+  }
+
+  #calculatePoint {
+    position: absolute;
+    background-color: red;
+    display: inline-block;
+    height: 100px;
+    width: 3px;
+    left: 90px;
+    cursor: grab;
+  }
+</style>
+<p><strong>Bu makineyi kullanarak 6 + 5 toplaması yapın. Makineyi yeniden ayarlamak gerekecek mi?</strong></p>
+<p>Aşağıdaki cetvellerden üstteki hareket edebilir. Üstteki cetvelin 0'ı alttaki cetvelin 2'sine denk gelmiş. Üstteki
+  cetveli fare ile tutarak sağa dogru kaydıralım ve üstteki 0 alttaki 4 ün üstüne gelsin. </p>
+<div id="ruler">
+  <div onmousedown="mouseDownRuler(event, this)" id="rulerTop" class="ruler">
+    <div class="ruler-container"></div>
+  </div>
+  <div id="rulerBottom" class="ruler">
+    <div class="ruler-container"></div>
+  </div>
+  <div id="calculatePoint" onmousedown="mouseDownCalculatePoint(event, this)"></div>
+</div>
+<p>Fare ile kırmızı çizginin de hareket ettiğini farkettiniz mi?</p>
+<script>
+  const mouseDownRuler = (event, dom) => {
+    event.preventDefault();
+    let shiftX = event.clientX - dom.getBoundingClientRect().left;
+
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+
+    function onMouseMove(event) {
+      let newLeft = event.clientX - shiftX - ruler.getBoundingClientRect().left;
+
+      if (newLeft < 0) {
+        newLeft = -10;
+      }
+      let rightEdge = ruler.offsetWidth - dom.offsetWidth;
+      if (newLeft > rightEdge) {
+        newLeft = rightEdge;
+      }
+
+      dom.style.left = newLeft + 'px';
+    }
+
+    function onMouseUp(event) {
+      let newLeft = dom.getBoundingClientRect().left - 50;
+      if (newLeft > 0 && newLeft % 30 !== 0) {
+        newLeft = newLeft + (30 - (newLeft % 30)) - 10
+      }
+
+      if (newLeft < 0) {
+        newLeft = -10
+      }
+      dom.style.left = newLeft + 'px';
+      document.removeEventListener('mouseup', onMouseUp);
+      document.removeEventListener('mousemove', onMouseMove);
+    }
+  }
+  const mouseDownCalculatePoint = (event, dom) => {
+    event.preventDefault();
+    let shiftX = event.clientX - dom.getBoundingClientRect().left;
+
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+
+    function onMouseMove(event) {
+      let newLeft = event.clientX - shiftX - ruler.getBoundingClientRect().left;
+
+      if (newLeft < 0) {
+        newLeft = 0;
+      }
+      let rightEdge = ruler.offsetWidth - dom.offsetWidth;
+      if (newLeft > rightEdge) {
+        newLeft = rightEdge;
+      }
+
+      dom.style.left = newLeft + 'px';
+    }
+
+    function onMouseUp(event) {
+      let newLeft = dom.getBoundingClientRect().left - 50;
+      if (newLeft > 0 && newLeft % 30 !== 0) {
+        newLeft = newLeft + (30 - (newLeft % 30))
+      }
+
+      if (newLeft < 0) {
+        newLeft = 0
+      }
+      dom.style.left = newLeft + 'px';
+      document.removeEventListener('mouseup', onMouseUp);
+      document.removeEventListener('mousemove', onMouseMove);
+    }
+  }
+  const createRulerLine = (parent, index) => {
+    let html = ''
+    let numberDistance = 10
+    for (let i = 0; i <= index * 10; i++) {
+      if (i === 0 || i % 10 === 0) {
+        if (i > 9) {
+          html = `${html}<span class="ruler-line big" style="left:${numberDistance}px"></span><span style="left:${numberDistance - 5}px" class="ruler-number">${i / 10}</span> `
+        } else {
+          html = `${html}<span class="ruler-line big" style="left:${numberDistance}px"></span><span style="left:${numberDistance - 2}px" class="ruler-number">${i / 10}</span> `
+        }
+
+      } else if (i % 5 === 0) {
+        html = `${html}<span class="ruler-line middle" style="left:${numberDistance}px"></span>`
+      }
+      html = `${html}<span class="ruler-line" style="left:${numberDistance}px"></span>`
+      numberDistance = numberDistance + 3
+    }
+    parent.insertAdjacentHTML('beforeend', html)
+
+  }
+
+  createRulerLine(document.querySelector('#rulerTop .ruler-container'), 15);
+  createRulerLine(document.querySelector('#rulerBottom .ruler-container'), 15);
+
+  document.getElementById('rulerTop').setAttribute('style', 'left:50px')
+
+</script>

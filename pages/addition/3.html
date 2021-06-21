@@ -1,0 +1,147 @@
+<link type="text/css" rel="stylesheet" href="./../../assets/index.css">
+<style>
+  .ball {
+    position: absolute;
+    cursor: pointer;
+    border: 3px solid red;
+    border-radius: 100%;
+    height: 12px;
+    width: 12px;
+  }
+
+  #field {
+    display: flex;
+    height: 200px;
+    margin: 16px
+  }
+
+  .ball-container {
+    position: relative;
+    width: 200px;
+    border-bottom: 2px solid black;
+  }
+
+  #left {
+    border-left: 2px solid black;
+  }
+
+  #right {
+    text-align: right;
+    border-right: 2px solid black;
+  }
+
+  #form.error input {
+
+    border: 1px solid red
+  }
+
+  .error-message {
+    display: none;
+  }
+
+  #form.error .error-message {
+    display: block;
+  }
+</style>
+<div>
+  <h3>Başka bir toplama makinesi</h3>
+  <p>Sol ve sağ kutulara sayılar girin ve tahmin ettiğiniz sonucu da girin.<br>Test et butonuna basarak kovanın dibine
+    kaç
+    topun düşeceğini ve cevabınızın dogru olup olmadığını göreceksiniz. <br>(Sayıların toplamı 20yi geçmesin)</p>
+  <div id="form">
+    <input id="number1" onkeyup="createBall('left', this)" onkeydown="clearBalls('left')" type="text"> + <input
+      type="text" onkeyup="createBall('right', this)" onkeydown="clearBalls('right')" id="number2"> =
+    <input type="text" id="result" onkeyup="resetMessage()"> <button type="button" onclick="test()">Test
+      Et</button>
+    <p class="error-message"></p>
+  </div>
+  <div id="field">
+    <div class="ball-container" id="left"></div>
+    <div class="ball-container" id="right"></div>
+  </div>
+  <div id="message"></div>
+</div>
+
+
+<script src="./../../assets/animate.js"></script>
+<script>
+  const resetMessage = () => {
+    document.getElementById('message').innerHTML = ''
+  }
+  const createBall = (position, ev) => {
+    for (let i = 0; i < parseInt(ev.value); i++) {
+      document.getElementById(position).insertAdjacentHTML('beforeend', `<span class="ball" data-number="${i * 15}" style="${position}:${i * 15}px"></span>`)
+    }
+  }
+  const clearBalls = (position) => {
+    document.getElementById(position).innerHTML = ''
+  }
+
+  const anim = (dom, position) => {
+    let height = field.clientHeight - 15;
+    let width = 100;
+    animate({
+      duration: 1000,
+      timing: makeEaseOut(bounce),
+      draw: function (progress) {
+        dom.style.top = height * progress + "px";
+      },
+    });
+    animate({
+      duration: 1000,
+      timing: makeEaseOut(quad),
+      draw: function (progress) {
+        dom.style[position] = (width * progress) + parseInt(dom.dataset.number) + "px";
+      },
+    });
+  }
+  const test = () => {
+    clearBalls('right');
+    clearBalls('left');
+    const number1Dom = document.getElementById('number1');
+    const number2Dom = document.getElementById('number2');
+    createBall('left', number1Dom);
+    createBall('right', number2Dom);
+    const predictedResult = parseInt(document.getElementById('result').value, 10);
+    const number1 = parseInt(number1Dom.value, 10);
+    const number2 = parseInt(number2Dom.value, 10);
+    if (number1 + number2 > 20) {
+      document.getElementById('form').classList.add('error')
+      document.querySelector('.error-message').innerHTML = "Sayıların toplamı 20'yi geçmesin"
+    }
+    if (!number1 || typeof number1 != 'number' || !number2 || typeof number2 != 'number' || !predictedResult || typeof predictedResult != 'number') {
+      document.getElementById('form').classList.add('error')
+      document.querySelector('.error-message').innerHTML = "Tüm alanları doldurunuz!"
+      return
+    } else {
+      document.querySelector('.error-message').innerHTML = ""
+      document.getElementById('form').classList.remove('error')
+    }
+
+    const rightBalls = document.getElementById('right').querySelectorAll('.ball');
+    const leftBalls = document.getElementById('left').querySelectorAll('.ball');
+    for (let i = 0; i < rightBalls.length; i++) {
+      setTimeout(() => {
+        anim(rightBalls[i], 'right')
+      }, 1000 * i);
+    }
+    for (let i = 0; i < leftBalls.length; i++) {
+      setTimeout(() => {
+        anim(leftBalls[i], 'left')
+      }, 1000 * i);
+    }
+
+    const latencey = rightBalls.length >= leftBalls.length ? rightBalls.length : leftBalls.length;
+    setTimeout(() => {
+      showResult(number1, number2, predictedResult);
+    }, latencey * 1000);
+  }
+  const showResult = (number1, number2, predictedResult) => {
+    const messageDomElement = document.getElementById('message');
+    if (number1 + number2 === predictedResult) {
+      messageDomElement.innerHTML = `Tebrikler, ${number1} + ${number2} = ${predictedResult} eder.`
+    } else {
+      messageDomElement.innerHTML = `Üzgünüm sonuç ${predictedResult} değil. Lütfen tekrar dene!`
+    }
+  }
+</script>

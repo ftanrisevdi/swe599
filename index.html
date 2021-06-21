@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+  <head>
+    <title>Meraklısına</title>
+    <link type="text/css" rel="stylesheet" href="assets/index.css">
+    <style>
+      .container {
+        display: flex;
+        height: 100%;
+        flex: 1;
+      }
+
+      .nav {
+        width: 300px;
+        background-color: #f3f3f3;
+        padding: 16px 8px;
+        border-right: 1px solid #450000;
+      }
+
+      .content {
+        width: calc(100% - 300px);
+        padding: 16px 8px;
+      }
+
+      iframe {
+        border: none;
+        background: none;
+        overflow: auto;
+      }
+
+      .progressbar {
+        display: inline-block;
+        height: 10px;
+        width: 200px;
+        border: 1px solid black;
+        vertical-align: middle;
+      }
+
+      button {
+        text-align: left;
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-weight: bold;
+      }
+
+      button:hover,
+      button.active {
+        color: green
+      }
+
+      #activebar {
+        display: inline-block;
+        height: 8px;
+        background-color: red;
+        vertical-align: super;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="nav">
+        <h2>Toplama İşlemi </h2>
+        <div id="menu">
+        </div>
+        <button type="button" onclick="previous()">
+          << </button>
+            <span class="progressbar">
+              <span id="activebar"></span>
+            </span>
+            <button type="button" onclick="next()">
+              >> </button>
+      </div>
+      <div class="content" id="content">
+        <iframe id="inlineFrameExample" height="100%" width="100%" src="./pages/addition/index.html">
+        </iframe>
+      </div>
+    </div>
+    <script>
+      let selectedIndex = -1;
+      const menu = [{
+        path: './pages/addition/0.html',
+        title: 'Toplama Makinesi - Terazi - I',
+        parent: false
+      }, {
+        path: './pages/addition/1.html',
+        title: 'Toplama Makinesi - Terazi - II',
+        parent: false
+      }, {
+        path: './pages/addition/2.html',
+        title: 'Toplama Makinesi - Terazi - III',
+        parent: false
+      }, {
+        path: './pages/addition/3.html',
+        title: 'Toplama Makinesi - Düşen toplar',
+        parent: false
+      }, {
+        path: './pages/addition/4.html',
+        title: 'Toplama Makinesi - Cetvel - I',
+        parent: false
+      }, {
+        path: './pages/addition/5.html',
+        title: 'Toplama Makinesi - Cetvel - II',
+        parent: false
+      }, {
+        path: './pages/addition/6.html',
+        title: 'Toplama Algoritması',
+        parent: false
+      }, {
+        path: './pages/addition/7.html',
+        title: 'Toplama Algoritması - İki basamaklı sayılar',
+        parent: false
+      }, {
+        path: './pages/addition/8.html',
+        title: 'Toplama Algoritması - Üç sayı',
+        parent: false
+      }]
+      const menuMaker = () => {
+        html = '<ul>';
+        for (let i = 0; i < menu.length; i++) {
+          html = `${html}<li><button id="menu${i}" class="menu-item" onclick="iframeOnChange('${menu[i].path}', ${i})" type="button">${menu[i].title}</button></li>`
+        }
+        html = html + "</ul>";
+        document.getElementById('menu').insertAdjacentHTML('beforeend', html);
+      }
+      const iframeOnChange = (path, index) => {
+        const elements = document.querySelectorAll('.menu-item');
+        for (let i = 0; i < elements.length; i++) {
+          elements[i].classList.remove('active');
+        }
+        document.getElementById(`menu${selectedIndex}`)
+        selectedIndex = index;
+        document.getElementById('inlineFrameExample').setAttribute('src', `${path}?v=${new Date().getTime()}`);
+        document.getElementById(`menu${selectedIndex}`).classList.add('active');
+        progressbar(selectedIndex);
+      }
+      const progressbar = (index) => {
+        const unit = document.querySelector('.progressbar').offsetWidth / menu.length
+        document.getElementById('activebar').setAttribute('style', `width:${unit + (unit * index)}px`);
+      }
+      const next = () => {
+        if (selectedIndex < menu.length - 1) {
+          selectedIndex++;
+          iframeOnChange(menu[selectedIndex].path, selectedIndex)
+        }
+      }
+      const previous = () => {
+        if (selectedIndex > 0) {
+          selectedIndex--;
+          iframeOnChange(menu[selectedIndex].path, selectedIndex)
+        }
+      }
+      menuMaker();
+
+    </script>
+  </body>
+
+</html>

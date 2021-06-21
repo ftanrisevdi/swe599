@@ -1,0 +1,86 @@
+.scale {
+  position: relative;
+  width: 482px;
+  height: 464px;
+}
+
+.svg-container {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 482px;
+  height: 405px;
+  display: none;
+}
+
+#off-balanced-left {
+  top: 38px;
+  left: 6px;
+}
+
+#off-balanced-right {
+  top: 38px;
+}
+
+.draggable {
+  cursor: move;
+}
+
+.weight {
+  width: 40px;
+  height: 40px;
+  position: relative;
+  display: inline-block;
+  font-weight: bold;
+}
+
+.weight .number {
+  position: absolute;
+  top: 50%;
+  margin-top: -8px;
+  left: 50%;
+  margin-left: -5px;
+}
+
+.weight.size-3,
+.weight.size-300 {
+  width: 50px;
+  height: 50px;
+}
+
+.weight.size-5,
+.weight.size-500 {
+  width: 60px;
+  height: 60px;
+}
+.weight.size-6,
+.weight.size-600 {
+  width: 70px;
+  height: 70px;
+}
+.weight.size-9,
+.weight.size-900 {
+  width: 90px;
+  height: 90px;
+}
+
+.drop-area {
+  position: absolute;
+  min-height: 100px;
+  width: 215px;
+  bottom: 142px;
+  display: flex;
+  align-items: flex-end;
+}
+
+.drop-area.heavy {
+  top: 265px;
+}
+
+.drop-area.light {
+  bottom: 185px;
+}
+
+#scale-right {
+  left: 275px;
+}
